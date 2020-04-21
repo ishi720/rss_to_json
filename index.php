@@ -48,10 +48,6 @@ else {
 	print("FORMAT ERROR\n");exit;
 }
 
-//　ページとサイズの表示計算
-$min_size = $size * ($page - 1);
-$max_size = ($size * $page) - 1;
-
 $response = array();
 $response['error_status'] = "0";
 $response['response_items_count'] = count($items_data);
@@ -60,13 +56,14 @@ $response['rss_format'] = $format;
 $response['response_feed'] = $feed_data;
 
 $response['response_items'] = array();
-for ($i = $min_size; $i <= $max_size; $i++){
-    if($items_data[$i]){
-        array_push($response['response_items'], $items_data[$i]);
-    } else {
-        break;
-    }
+
+$init_num = $size * ($page - 1);
+foreach($items_data as $key => $item){
+	if ( $init_num < $key && $init_num + $size) {
+		array_push($response['response_items'], $items_data[$key]);
+	}
 }
+
 
 header('Content-type: text/javascript; charset=utf-8');
 //echo json_encode($response);
