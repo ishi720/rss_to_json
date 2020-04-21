@@ -30,19 +30,19 @@ $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT) ?: 1;
 
 //ATOM
 if($format == "ATOM"){
-	$info_data = atom_info_get($rssdata);
 	$feed_data = atom_feed_get($rssdata);
+	$items_data = atom_items_get($rssdata);
 }
 //RSS1.0
 elseif($format == "RSS1.0"){
-	$info_data = rss1_info_get($rssdata);
 	$feed_data = rss1_feed_get($rssdata);
+	$items_data = rss1_items_get($rssdata);
 
 }
 //RSS2.0
 elseif($format == "RSS2.0"){
-	$info_data = rss2_info_get($rssdata);
-	$feed_data = rss2_feed_get($rssdata);
+	$feed_data = rss2_fees_get($rssdata);
+	$items_data = rss2_items_get($rssdata);
 }
 else {
 	print("FORMAT ERROR\n");exit;
@@ -54,15 +54,15 @@ $max_size = ($size * $page) - 1;
 
 $response = array();
 $response['error_status'] = "0";
-$response['response_feed_count'] = count($feed_data);
+$response['response_items_count'] = count($items_data);
 $response['request_url'] = $rss_url;
 $response['rss_format'] = $format;
-$response['response_info'] = $info_data;
+$response['response_feed'] = $feed_data;
 
-$response['response_feed'] = array();
+$response['response_items'] = array();
 for ($i = $min_size; $i <= $max_size; $i++){
-    if($feed_data[$i]){
-        array_push($response['response_feed'], $feed_data[$i]);
+    if($items_data[$i]){
+        array_push($response['response_items'], $items_data[$i]);
     } else {
         break;
     }
@@ -92,8 +92,8 @@ function rss_format_get($rssdata){
 }
 
 
-// info_get
-function rss1_info_get($rssdata){
+// feed
+function rss1_feed_get($rssdata){
 	foreach ($rssdata->channel as $channel) {
 		$work = array();
 		foreach ($channel as $key => $value) {
@@ -107,7 +107,7 @@ function rss1_info_get($rssdata){
 	}
 	return $data;
 }
-function rss2_info_get($rssdata){
+function rss2_fees_get($rssdata){
 	foreach ($rssdata->channel as $channel) {
 		$work = array();
 		foreach ($channel as $key => $value) {
@@ -117,7 +117,7 @@ function rss2_info_get($rssdata){
 	}
 	return $data;
 }
-function atom_info_get($rssdata){
+function atom_feed_get($rssdata){
 	foreach ($rssdata as $item){
 		$work = array();
 		$work['title'] = (string)$item;
@@ -126,8 +126,8 @@ function atom_info_get($rssdata){
 	return $data;
 }
 
-// feed_get
-function rss1_feed_get($rssdata){
+// items
+function rss1_items_get($rssdata){
 	foreach ($rssdata->item as $item) {
 		$work = array();
 
@@ -149,7 +149,7 @@ function rss1_feed_get($rssdata){
 	}
 	return $data;
 }
-function rss2_feed_get($rssdata){
+function rss2_items_get($rssdata){
 	foreach ($rssdata->channel->item as $item) {
 		$work = array();
 		foreach ($item as $key => $value) {
@@ -159,7 +159,7 @@ function rss2_feed_get($rssdata){
 	}
 	return $data;
 }
-function atom_feed_get($rssdata){
+function atom_items_get($rssdata){
 	foreach ($rssdata->entry as $item){
 		$work = array();
 		foreach ($item as $key => $value) {
