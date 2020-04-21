@@ -1,10 +1,27 @@
 <?php
 
+include './config.php';
+
 $data = array();
 
 $rss_url = htmlspecialchars($_GET["rss_url"],ENT_QUOTES, "UTF-8");
 
-$rssdata = simplexml_load_string(file_get_contents($rss_url));
+if (PROXY_REQUEST) {
+	// Proxy経由の場合
+	$rssdata = simplexml_load_string(file_get_contents($rss_url, false, stream_context_create([
+		    'http' => [
+		        'method' => 'GET',
+		        'request_fulluri' => true,
+		        'header' =>
+		            'Proxy-Authorization: Basic '.base64_encode(PROXY_USER .':'. PROXY_PASS)."\r\n".
+		            'Proxy-Connection: close',
+		        'proxy'  => PROXY_URL .':'. PROXY_PORT,
+		    ]
+		])
+	));
+} else {
+	$rssdata = simplexml_load_string(file_get_contents($rss_url));
+}
 
 $format = rss_format_get($rssdata);
 
