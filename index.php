@@ -152,8 +152,13 @@ function rss1_items_get($rssdata){
 function rss2_items_get($rssdata){
 	foreach ($rssdata->channel->item as $item) {
 		$work = array();
+		$work['category'] = array();
 		foreach ($item as $key => $value) {
-			$work[$key] = (string)$value;
+			if ($key === "category") {
+				array_push($work[$key], (string)$value);
+			} else {
+				$work[$key] = (string)$value;
+			}
 		}
 		$data[] = $work;
 	}
