@@ -25,8 +25,8 @@ if (PROXY_REQUEST) {
 
 $format = rss_format_get($rssdata);
 
-$size = filter_input(INPUT_GET, 'size', FILTER_VALIDATE_INT) ?: 10;
-$page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT) ?: 1;
+$size = filter_input(INPUT_GET, 'size', FILTER_VALIDATE_INT) ?: 0;
+$page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT) ?: 0;
 
 //ATOM
 if($format == "ATOM"){
@@ -55,12 +55,18 @@ $response['request_url'] = $rss_url;
 $response['rss_format'] = $format;
 $response['response_feed'] = $feed_data;
 
+// ページ管理
 $response['response_items'] = array();
-
 $init_num = $size * ($page - 1);
 foreach($items_data as $key => $item){
-	if ( $init_num < $key && $init_num + $size) {
+	if( $page * $size === 0) {
+		//ページ・サイズの指定されていなければすべて表示
 		array_push($response['response_items'], $items_data[$key]);
+	} else {
+		//ページ・サイズが指定して入れば、範囲内のみ表示
+		if ( $init_num < $key && $init_num + $size) {
+			array_push($response['response_items'], $items_data[$key]);
+		}
 	}
 }
 
