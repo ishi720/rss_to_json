@@ -25,9 +25,9 @@ foreach ($rss_data2['response']['items'] as $k => $v) {
 
 # 並び替え
 foreach ($marge_data as $key => $value) {
-  $id[$key] = $value['pubDate'];
+  $id[$key] = $value['date'];
 }
-array_multisort($id, SORT_ASC, $marge_data);
+array_multisort($id, SORT_DESC, $marge_data);
 
 # 結果を表示
 header('Content-type: text/javascript; charset=utf-8');

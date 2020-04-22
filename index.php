@@ -49,7 +49,7 @@ elseif($format == "RSS1.0"){
 }
 //RSS2.0
 elseif($format == "RSS2.0"){
-    $feed_data = rss2_fees_get($rssdata);
+    $feed_data = rss2_feed_get($rssdata);
     $items_data = rss2_items_get($rssdata);
 }
 else {
@@ -109,12 +109,13 @@ function rss1_feed_get($rssdata){
     }
     return $data;
 }
-function rss2_fees_get($rssdata){
+function rss2_feed_get($rssdata){
 	$data = array();
     foreach ($rssdata->channel as $channel) {
         $work = array();
         foreach ($channel as $key => $value) {
-            $work[$key] = (string)$value;
+
+			$work[$key] = (string)$value;
         }
         $data[] = $work;
     }
@@ -164,6 +165,11 @@ function rss2_items_get($rssdata){
                 array_push($work[$key], (string)$value);
             } else {
                 $work[$key] = (string)$value;
+
+         		if ( $key === "pubDate"){
+				 	$timestamp = strtotime((string)$value);
+				 	$work['date'] = date('Y/m/d H:i:s', $timestamp);
+         		} 
             }
         }
         $data[] = $work;
