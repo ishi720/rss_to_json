@@ -2,9 +2,20 @@
 
 include './config.php';
 
-$data = array();
-
 $rss_url = filter_input(INPUT_GET, 'rss_url', FILTER_VALIDATE_URL);
+$size = filter_input(INPUT_GET, 'size', FILTER_VALIDATE_INT) ?: 0;
+$page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT) ?: 0;
+
+$data = array();
+$data['request']['url'] = $rss_url;
+$data['request']['page'] = $page;
+$data['request']['size'] = $size;
+
+if ( !$rss_url ) {
+	//エラー
+	response_json('NG', $data['request'], '');
+	exit;
+}
 
 if (PROXY_REQUEST) {
     // Proxy経由の場合
@@ -24,9 +35,6 @@ if (PROXY_REQUEST) {
 }
 
 $format = rss_format_get($rssdata);
-
-$size = filter_input(INPUT_GET, 'size', FILTER_VALIDATE_INT) ?: 0;
-$page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT) ?: 0;
 
 //ATOM
 if($format == "ATOM"){
@@ -48,34 +56,26 @@ else {
     print("FORMAT ERROR\n");exit;
 }
 
-$response = array();
-$response['status'] = "ok";
 
-$response['request']['url'] = $rss_url;
-$response['request']['page'] = $page;
-$response['request']['size'] = $size;
-
-$response['response']['items_all_count'] = count($items_data);
-$response['response']['rss_format'] = $format;
-$response['response']['feed'] = $feed_data;
-
-// ページ管理
-$response['response']['items'] = array();
+$data['response']['items_all_count'] = count($items_data);
+$data['response']['rss_format'] = $format;
+$data['response']['feed'] = $feed_data;
+$data['response']['items'] = array();
 $init_num = $size * ($page - 1);
 foreach($items_data as $key => $item){
     if( $page * $size === 0) {
         //ページ・サイズの指定されていなければすべて表示
-        array_push($response['response']['items'], $items_data[$key]);
+        array_push($data['response']['items'], $items_data[$key]);
     } else {
         //ページ・サイズが指定して入れば、範囲内のみ表示
         if ( $init_num < $key && $init_num + $size) {
-            array_push($response['response']['items'], $items_data[$key]);
+            array_push($data['response']['items'], $items_data[$key]);
         }
     }
 }
 
-header('Content-type: text/javascript; charset=utf-8');
-echo json_encode($response);
+// 正常終了
+response_json('OK', $data['request'], $data['response']);
 
 /*
  function
@@ -99,6 +99,7 @@ function rss_format_get($rssdata){
 
 // feed
 function rss1_feed_get($rssdata){
+	$data = array();
     foreach ($rssdata->channel as $channel) {
         $work = array();
         foreach ($channel as $key => $value) {
@@ -109,6 +110,7 @@ function rss1_feed_get($rssdata){
     return $data;
 }
 function rss2_fees_get($rssdata){
+	$data = array();
     foreach ($rssdata->channel as $channel) {
         $work = array();
         foreach ($channel as $key => $value) {
@@ -119,6 +121,7 @@ function rss2_fees_get($rssdata){
     return $data;
 }
 function atom_feed_get($rssdata){
+	$data = array();
     foreach ($rssdata as $item){
         $work = array();
         $work['title'] = (string)$item;
@@ -129,6 +132,7 @@ function atom_feed_get($rssdata){
 
 // items
 function rss1_items_get($rssdata){
+	$data = array();
     foreach ($rssdata->item as $item) {
         $work = array();
 
@@ -151,6 +155,7 @@ function rss1_items_get($rssdata){
     return $data;
 }
 function rss2_items_get($rssdata){
+	$data = array();
     foreach ($rssdata->channel->item as $item) {
         $work = array();
         $work['category'] = array();
@@ -166,6 +171,7 @@ function rss2_items_get($rssdata){
     return $data;
 }
 function atom_items_get($rssdata){
+	$data = array();
     foreach ($rssdata->entry as $item){
         $work = array();
         foreach ($item as $key => $value) {
@@ -178,4 +184,14 @@ function atom_items_get($rssdata){
         $data[] = $work;
     }
     return $data;
+}
+
+function response_json($status, $request, $response){
+	$data = array();
+	$data['status'] = $status;
+	$data['request'] = $request;
+	$data['response'] = $response;
+
+	header('Content-type: text/javascript; charset=utf-8');
+	echo json_encode($data);
 }
