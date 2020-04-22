@@ -23,9 +23,25 @@ foreach ($rss_data2['response']['items'] as $k => $v) {
     array_push($marge_data, $v);
 }
 
+# フィルタリング
+$work = array();
+foreach ($marge_data as $k => $v) {
+	# TODO: 様々な条件に対応できるようにする
+    if(
+    	true
+    	&& preg_match('/コロナ/',$v['title'])
+    	//&& preg_match('/新型/',$v['description'])
+    	//&& in_array('くらし・教育', $v['category'])
+    ){
+        array_push($work, $v);
+    }
+}
+$marge_data = $work;
+
+
 # 並び替え
-foreach ($marge_data as $key => $value) {
-  $id[$key] = $value['date'];
+foreach ($marge_data as $k => $v) {
+  $id[$k] = $v['date'];
 }
 array_multisort($id, SORT_DESC, $marge_data);
 
