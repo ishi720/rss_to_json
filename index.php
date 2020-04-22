@@ -55,7 +55,7 @@ $response['request']['url'] = $rss_url;
 $response['request']['page'] = $page;
 $response['request']['size'] = $size;
 
-$response['response']['items_count'] = count($items_data);
+$response['response']['items_all_count'] = count($items_data);
 $response['response']['rss_format'] = $format;
 $response['response']['feed'] = $feed_data;
 
