@@ -12,9 +12,9 @@ $data['request']['page'] = $page;
 $data['request']['size'] = $size;
 
 if ( !$rss_url ) {
-	//エラー
-	response_json('NG', $data['request'], '');
-	exit;
+    //エラー
+    response_json('NG', $data['request'], '');
+    exit;
 }
 
 if (PROXY_REQUEST) {
@@ -99,7 +99,7 @@ function rss_format_get($rssdata){
 
 // feed
 function rss1_feed_get($rssdata){
-	$data = array();
+    $data = array();
     foreach ($rssdata->channel as $channel) {
         $work = array();
         foreach ($channel as $key => $value) {
@@ -110,19 +110,19 @@ function rss1_feed_get($rssdata){
     return $data;
 }
 function rss2_feed_get($rssdata){
-	$data = array();
+    $data = array();
     foreach ($rssdata->channel as $channel) {
         $work = array();
         foreach ($channel as $key => $value) {
 
-			$work[$key] = (string)$value;
+            $work[$key] = (string)$value;
         }
         $data[] = $work;
     }
     return $data;
 }
 function atom_feed_get($rssdata){
-	$data = array();
+    $data = array();
     foreach ($rssdata as $item){
         $work = array();
         $work['title'] = (string)$item;
@@ -133,7 +133,7 @@ function atom_feed_get($rssdata){
 
 // items
 function rss1_items_get($rssdata){
-	$data = array();
+    $data = array();
     foreach ($rssdata->item as $item) {
         $work = array();
 
@@ -156,7 +156,7 @@ function rss1_items_get($rssdata){
     return $data;
 }
 function rss2_items_get($rssdata){
-	$data = array();
+    $data = array();
     foreach ($rssdata->channel->item as $item) {
         $work = array();
         $work['category'] = array();
@@ -166,10 +166,10 @@ function rss2_items_get($rssdata){
             } else {
                 $work[$key] = (string)$value;
 
-         		if ( $key === "pubDate"){
-				 	$timestamp = strtotime((string)$value);
-				 	$work['date'] = date('Y/m/d H:i:s', $timestamp);
-         		} 
+                if ( $key === "pubDate"){
+                    $timestamp = strtotime((string)$value);
+                    $work['date'] = date('Y/m/d H:i:s', $timestamp);
+                 } 
             }
         }
         $data[] = $work;
@@ -177,7 +177,7 @@ function rss2_items_get($rssdata){
     return $data;
 }
 function atom_items_get($rssdata){
-	$data = array();
+    $data = array();
     foreach ($rssdata->entry as $item){
         $work = array();
         foreach ($item as $key => $value) {
@@ -193,11 +193,11 @@ function atom_items_get($rssdata){
 }
 
 function response_json($status, $request, $response){
-	$data = array();
-	$data['status'] = $status;
-	$data['request'] = $request;
-	$data['response'] = $response;
+    $data = array();
+    $data['status'] = $status;
+    $data['request'] = $request;
+    $data['response'] = $response;
 
-	header('Content-type: text/javascript; charset=utf-8');
-	echo json_encode($data);
+    header('Content-type: text/javascript; charset=utf-8');
+    echo json_encode($data);
 }

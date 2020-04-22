@@ -15,12 +15,12 @@ $rss_data2 = json_decode(file_get_contents($rss_api2),true);
 # マージ
 $marge_data = array();
 foreach ($rss_data1['response']['items'] as $k => $v) {
-	$v['feed'] = $rss_data1['response']['feed'][0];
-	array_push($marge_data, $v);
+    $v['feed'] = $rss_data1['response']['feed'][0];
+    array_push($marge_data, $v);
 }
 foreach ($rss_data2['response']['items'] as $k => $v) {
-	$v['feed'] = $rss_data2['response']['feed'][0];
-	array_push($marge_data, $v);
+    $v['feed'] = $rss_data2['response']['feed'][0];
+    array_push($marge_data, $v);
 }
 
 # 並び替え
