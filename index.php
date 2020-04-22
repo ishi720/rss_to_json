@@ -4,7 +4,7 @@ include './config.php';
 
 $data = array();
 
-$rss_url = htmlspecialchars($_GET["rss_url"],ENT_QUOTES, "UTF-8");
+$rss_url = filter_input(INPUT_GET, 'rss_url', FILTER_VALIDATE_URL);
 
 if (PROXY_REQUEST) {
 	// Proxy経由の場合
