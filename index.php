@@ -7,20 +7,20 @@ $data = array();
 $rss_url = filter_input(INPUT_GET, 'rss_url', FILTER_VALIDATE_URL);
 
 if (PROXY_REQUEST) {
-	// Proxy経由の場合
-	$rssdata = simplexml_load_string(file_get_contents($rss_url, false, stream_context_create([
-		    'http' => [
-		        'method' => 'GET',
-		        'request_fulluri' => true,
-		        'header' =>
-		            'Proxy-Authorization: Basic '.base64_encode(PROXY_USER .':'. PROXY_PASS)."\r\n".
-		            'Proxy-Connection: close',
-		        'proxy'  => PROXY_URL .':'. PROXY_PORT,
-		    ]
-		])
-	));
+    // Proxy経由の場合
+    $rssdata = simplexml_load_string(file_get_contents($rss_url, false, stream_context_create([
+            'http' => [
+                'method' => 'GET',
+                'request_fulluri' => true,
+                'header' =>
+                    'Proxy-Authorization: Basic '.base64_encode(PROXY_USER .':'. PROXY_PASS)."\r\n".
+                    'Proxy-Connection: close',
+                'proxy'  => PROXY_URL .':'. PROXY_PORT,
+            ]
+        ])
+    ));
 } else {
-	$rssdata = simplexml_load_string(file_get_contents($rss_url));
+    $rssdata = simplexml_load_string(file_get_contents($rss_url));
 }
 
 $format = rss_format_get($rssdata);
@@ -30,22 +30,22 @@ $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT) ?: 0;
 
 //ATOM
 if($format == "ATOM"){
-	$feed_data = atom_feed_get($rssdata);
-	$items_data = atom_items_get($rssdata);
+    $feed_data = atom_feed_get($rssdata);
+    $items_data = atom_items_get($rssdata);
 }
 //RSS1.0
 elseif($format == "RSS1.0"){
-	$feed_data = rss1_feed_get($rssdata);
-	$items_data = rss1_items_get($rssdata);
+    $feed_data = rss1_feed_get($rssdata);
+    $items_data = rss1_items_get($rssdata);
 
 }
 //RSS2.0
 elseif($format == "RSS2.0"){
-	$feed_data = rss2_fees_get($rssdata);
-	$items_data = rss2_items_get($rssdata);
+    $feed_data = rss2_fees_get($rssdata);
+    $items_data = rss2_items_get($rssdata);
 }
 else {
-	print("FORMAT ERROR\n");exit;
+    print("FORMAT ERROR\n");exit;
 }
 
 $response = array();
@@ -63,121 +63,119 @@ $response['response']['feed'] = $feed_data;
 $response['response']['items'] = array();
 $init_num = $size * ($page - 1);
 foreach($items_data as $key => $item){
-	if( $page * $size === 0) {
-		//ページ・サイズの指定されていなければすべて表示
-		array_push($response['response']['items'], $items_data[$key]);
-	} else {
-		//ページ・サイズが指定して入れば、範囲内のみ表示
-		if ( $init_num < $key && $init_num + $size) {
-			array_push($response['response']['items'], $items_data[$key]);
-		}
-	}
+    if( $page * $size === 0) {
+        //ページ・サイズの指定されていなければすべて表示
+        array_push($response['response']['items'], $items_data[$key]);
+    } else {
+        //ページ・サイズが指定して入れば、範囲内のみ表示
+        if ( $init_num < $key && $init_num + $size) {
+            array_push($response['response']['items'], $items_data[$key]);
+        }
+    }
 }
 
-
 header('Content-type: text/javascript; charset=utf-8');
-//echo json_encode($response);
-echo sprintf("callback(%s)",json_encode($response));
+echo json_encode($response);
 
 /*
  function
 */
 function rss_format_get($rssdata){
-	if($rssdata->entry){
-		//ATOM
-		return "ATOM";
-	} elseif ($rssdata->item){
-		//RSS1.0
-		return "RSS1.0";
-	} elseif ($rssdata->channel->item){
-		//RSS2.0
-		return "RSS2.0";
-	} else {
-		print("FORMAT ERROR");
-		exit;
-	}
+    if($rssdata->entry){
+        //ATOM
+        return "ATOM";
+    } elseif ($rssdata->item){
+        //RSS1.0
+        return "RSS1.0";
+    } elseif ($rssdata->channel->item){
+        //RSS2.0
+        return "RSS2.0";
+    } else {
+        print("FORMAT ERROR");
+        exit;
+    }
 }
 
 
 // feed
 function rss1_feed_get($rssdata){
-	foreach ($rssdata->channel as $channel) {
-		$work = array();
-		foreach ($channel as $key => $value) {
-			$work[$key] = (string)$value;
-		}
-		$data[] = $work;
-	}
-	return $data;
+    foreach ($rssdata->channel as $channel) {
+        $work = array();
+        foreach ($channel as $key => $value) {
+            $work[$key] = (string)$value;
+        }
+        $data[] = $work;
+    }
+    return $data;
 }
 function rss2_fees_get($rssdata){
-	foreach ($rssdata->channel as $channel) {
-		$work = array();
-		foreach ($channel as $key => $value) {
-			$work[$key] = (string)$value;
-		}
-		$data[] = $work;
-	}
-	return $data;
+    foreach ($rssdata->channel as $channel) {
+        $work = array();
+        foreach ($channel as $key => $value) {
+            $work[$key] = (string)$value;
+        }
+        $data[] = $work;
+    }
+    return $data;
 }
 function atom_feed_get($rssdata){
-	foreach ($rssdata as $item){
-		$work = array();
-		$work['title'] = (string)$item;
-		$data[] = $work;
-	}
-	return $data;
+    foreach ($rssdata as $item){
+        $work = array();
+        $work['title'] = (string)$item;
+        $data[] = $work;
+    }
+    return $data;
 }
 
 // items
 function rss1_items_get($rssdata){
-	foreach ($rssdata->item as $item) {
-		$work = array();
+    foreach ($rssdata->item as $item) {
+        $work = array();
 
-		foreach ($item as $key => $value) {
-			$work[$key] = (string)$value;
-		}
+        foreach ($item as $key => $value) {
+            $work[$key] = (string)$value;
+        }
 
-		//dc
-		foreach ($item->children('dc',true) as $key => $value) {
-			$work['dc:'. $key] = (string)$value;
-		}
+        //dc
+        foreach ($item->children('dc',true) as $key => $value) {
+            $work['dc:'. $key] = (string)$value;
+        }
 
-		//content
-		foreach ($item->children('content',true) as $key => $value) {
-			$work['content:'. $key] = (string)$value;
-		}
+        //content
+        foreach ($item->children('content',true) as $key => $value) {
+            $work['content:'. $key] = (string)$value;
+        }
 
-		$data[] = $work;
-	}
-	return $data;
+        $data[] = $work;
+    }
+    return $data;
 }
 function rss2_items_get($rssdata){
-	foreach ($rssdata->channel->item as $item) {
-		$work = array();
-		$work['category'] = array();
-		foreach ($item as $key => $value) {
-			if ($key === "category") {
-				array_push($work[$key], (string)$value);
-			} else {
-				$work[$key] = (string)$value;
-			}
-		}
-		$data[] = $work;
-	}
-	return $data;
+    foreach ($rssdata->channel->item as $item) {
+        $work = array();
+        $work['category'] = array();
+        foreach ($item as $key => $value) {
+            if ($key === "category") {
+                array_push($work[$key], (string)$value);
+            } else {
+                $work[$key] = (string)$value;
+            }
+        }
+        $data[] = $work;
+    }
+    return $data;
 }
 function atom_items_get($rssdata){
-	foreach ($rssdata->entry as $item){
-		$work = array();
-		foreach ($item as $key => $value) {
-			if( $key == "link"){
-				$work[$key] = (string)$value->attributes()->href;;
-			} else {
-				$work[$key] = (string)$value;
-			}
-		}
-		$data[] = $work;
-	}
-	return $data;
+    foreach ($rssdata->entry as $item){
+        $work = array();
+        foreach ($item as $key => $value) {
+            if( $key == "link"){
+                $work[$key] = (string)$value->attributes()->href;;
+            } else {
+                $work[$key] = (string)$value;
+            }
+        }
+        $data[] = $work;
+    }
+    return $data;
 }
