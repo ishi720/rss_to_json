@@ -5,3 +5,5 @@ define('PROXY_URL', '');
 define('PROXY_PORT', '');
 define('PROXY_USER', '');
 define('PROXY_PASS', '');
+
+define('API_URL', '');
