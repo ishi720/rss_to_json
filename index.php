@@ -102,10 +102,6 @@ function rss1_feed_get($rssdata){
 		foreach ($channel as $key => $value) {
 			$work[$key] = (string)$value;
 		}
-		//dc
-		foreach ($channel->children('dc',true) as $key => $value) {
-			$work['dc:'. $key] = (string)$value;
-		}
 		$data[] = $work;
 	}
 	return $data;
