@@ -2,25 +2,26 @@
 
 include './config.php';
 
-$rss_url1 = urlencode("https://www.town.fukaura.lg.jp/categories/bunya/kenkou_iryou/korona/index.rss");
-$rss_url2 = urlencode("http://www.vill.inakadate.lg.jp/shinchaku-portal/index.rss");
+$rss_urls = array(
+	//"https://www.town.fukaura.lg.jp/categories/bunya/kenkou_iryou/korona/index.rss",
+	"http://www.vill.inakadate.lg.jp/shinchaku-portal/index.rss",
+    "https://www.town.imabetsu.lg.jp/rss/feed.rss"
+);
 
 # データの取得
-$rss_api1 = API_URL ."/rss_to_json/?rss_url=". $rss_url1;
-$rss_data1 = json_decode(file_get_contents($rss_api1),true);
-
-$rss_api2 = API_URL ."/rss_to_json/?rss_url=". $rss_url2;
-$rss_data2 = json_decode(file_get_contents($rss_api2),true);
+$rss_data = array();
+foreach ($rss_urls as $url) {
+    $rss_api_url = API_URL ."/rss_to_json/?rss_url=". urlencode($url);
+    array_push($rss_data, json_decode(file_get_contents($rss_api_url),true));
+}
 
 # マージ
 $marge_data = array();
-foreach ($rss_data1['response']['items'] as $k => $v) {
-    $v['feed'] = $rss_data1['response']['feed'][0];
-    array_push($marge_data, $v);
-}
-foreach ($rss_data2['response']['items'] as $k => $v) {
-    $v['feed'] = $rss_data2['response']['feed'][0];
-    array_push($marge_data, $v);
+foreach ($rss_data as $json) {
+    foreach ($json['response']['items'] as $k => $v) {
+        $v['feed'] = $json['response']['feed'][0];
+        array_push($marge_data, $v);
+    }
 }
 
 # フィルタリング
@@ -29,7 +30,7 @@ foreach ($marge_data as $k => $v) {
 	# TODO: 様々な条件に対応できるようにする
     if(
     	true
-    	&& preg_match('/コロナ/',$v['title'])
+    	//&& preg_match('/コロナ/',$v['title'])
     	//&& preg_match('/新型/',$v['description'])
     	//&& in_array('くらし・教育', $v['category'])
     ){
