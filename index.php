@@ -144,6 +144,10 @@ function rss1_items_get($rssdata){
         //dc
         foreach ($item->children('dc',true) as $key => $value) {
             $work['dc:'. $key] = (string)$value;
+            if ( $key === "date"){
+                $timestamp = strtotime((string)$value);
+                $work['date'] = date('Y/m/d H:i:s', $timestamp);
+            }
         }
 
         //content
