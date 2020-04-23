@@ -3,16 +3,20 @@
 include './config.php';
 
 $rss_urls = array(
-	//"https://www.town.fukaura.lg.jp/categories/bunya/kenkou_iryou/korona/index.rss",
+	"https://www.town.fukaura.lg.jp/categories/bunya/kenkou_iryou/korona/index.rss",
 	"http://www.vill.inakadate.lg.jp/shinchaku-portal/index.rss",
-    "https://www.town.imabetsu.lg.jp/rss/feed.rss"
+    //"https://www.town.imabetsu.lg.jp/rss/feed.rss"
 );
 
 # データの取得
 $rss_data = array();
 foreach ($rss_urls as $url) {
     $rss_api_url = API_URL ."/rss_to_json/?rss_url=". urlencode($url);
-    array_push($rss_data, json_decode(file_get_contents($rss_api_url),true));
+
+    $api_data = json_decode(file_get_contents($rss_api_url),true);
+    if ( $api_data['status'] === 'OK') {
+        array_push($rss_data, $api_data);
+    }
 }
 
 # マージ
