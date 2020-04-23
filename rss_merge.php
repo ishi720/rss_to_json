@@ -3,16 +3,22 @@
 include './config.php';
 
 $rss_urls = array(
-	"https://www.town.fukaura.lg.jp/categories/bunya/kenkou_iryou/korona/index.rss",
+	"https://www.town.fukaura.lg.jp/categories/bunya/korona/index.rss",
 	"http://www.vill.inakadate.lg.jp/shinchaku-portal/index.rss",
-    //"https://www.town.imabetsu.lg.jp/rss/feed.rss"
+    "https://www.city.hirakawa.lg.jp/rss/feed.rss"
 );
+
+# GET
+# TODO: POSTにする
+$filter_title = filter_input(INPUT_GET, 'title') ?: '';
+$filter_description = filter_input(INPUT_GET, 'description') ?: '';
+$filter_category = filter_input(INPUT_GET, 'category') ?: '';
 
 # TODO: キーワードをカンマ区切りにする
 $search_keyword = array(
-    'title'=> 'マスク',
-    'description'=> '新型',
-    'category' => ''
+    'title'=> $filter_title,
+    'description'=> $filter_description,
+    'category' => $filter_category
 );
 
 # データの取得
