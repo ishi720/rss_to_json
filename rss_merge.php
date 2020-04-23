@@ -8,6 +8,13 @@ $rss_urls = array(
     //"https://www.town.imabetsu.lg.jp/rss/feed.rss"
 );
 
+# TODO: キーワードをカンマ区切りにする
+$search_keyword = array(
+    'title'=> 'マスク',
+    'description'=> '新型',
+    'category' => ''
+);
+
 # データの取得
 $rss_data = array();
 foreach ($rss_urls as $url) {
@@ -31,13 +38,28 @@ foreach ($rss_data as $json) {
 # フィルタリング
 $work = array();
 foreach ($marge_data as $k => $v) {
-	# TODO: 様々な条件に対応できるようにする
-    if(
-    	true
-    	//&& preg_match('/コロナ/',$v['title'])
-    	//&& preg_match('/新型/',$v['description'])
-    	//&& in_array('くらし・教育', $v['category'])
-    ){
+
+    $filter_check = true;
+    //AND
+    if ($search_keyword['title'] !== '') {
+        if ( $filter_check && preg_match('/'. $search_keyword['title'] .'/', $v['title']) === 1 ) {
+        } else {
+            $filter_check = false;
+        }
+    }
+    if ($search_keyword['description'] !== '') {
+        if ( $filter_check && preg_match('/'. $search_keyword['description'] .'/', $v['description']) === 1 ) {
+        } else {
+            $filter_check = false;
+        }
+    }
+    if( $search_keyword['category'] !== ''){
+        if ( $filter_check && in_array($search_keyword['category'], $v['category']) ) {
+        } else {
+            $filter_check = false;
+        }
+    }
+    if ( $filter_check ) {
         array_push($work, $v);
     }
 }
