@@ -18,10 +18,10 @@ if ( !$rss_url ) {
 }
 
 if (PROXY_REQUEST) {
-    // Proxy経由の場合
-    $rssdata = simplexml_load_string(file_get_contents($rss_url, false, stream_context_create([
+    $contents = file_get_contents($rss_url, false, stream_context_create([
             'http' => [
                 'method' => 'GET',
+                "ignore_errors" => true,
                 'request_fulluri' => true,
                 'header' =>
                     'Proxy-Authorization: Basic '.base64_encode(PROXY_USER .':'. PROXY_PASS)."\r\n".
@@ -29,9 +29,24 @@ if (PROXY_REQUEST) {
                 'proxy'  => PROXY_URL .':'. PROXY_PORT,
             ]
         ])
-    ));
+    );
 } else {
-    $rssdata = simplexml_load_string(file_get_contents($rss_url));
+    $contents = file_get_contents($rss_url, false, stream_context_create([
+            'http' => [
+                "ignore_errors" => true
+            ]
+        ])
+    );
+}
+
+// file_get_contents結果確認
+preg_match("/[0-9]{3}/", $http_response_header[0], $http_status);
+if($http_status[0] === '200'){
+    $rssdata = simplexml_load_string($contents);
+} else {
+    //エラー
+    response_json('NG', $data['request'], '');
+    exit;
 }
 
 $format = rss_format_get($rssdata);
