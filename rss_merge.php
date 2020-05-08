@@ -46,15 +46,16 @@ $work = array();
 foreach ($marge_data as $k => $v) {
 
     $filter_check = true;
+
     //AND
     if ($search_keyword['title'] !== '') {
-        if ( $filter_check && preg_match('/'. $search_keyword['title'] .'/', $v['title']) === 1 ) {
+        if ( $filter_check && preg_match('/('. str_replace(',','|',$search_keyword['title']) .')/', $v['title']) === 1 ) {
         } else {
             $filter_check = false;
         }
     }
     if ($search_keyword['description'] !== '') {
-        if ( $filter_check && preg_match('/'. $search_keyword['description'] .'/', $v['description']) === 1 ) {
+        if ( $filter_check && preg_match('/('. str_replace(',','|',$search_keyword['description']) .')/', $v['description']) === 1 ) {
         } else {
             $filter_check = false;
         }
