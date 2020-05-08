@@ -71,13 +71,13 @@ foreach ($marge_data as $k => $v) {
 }
 $marge_data = $work;
 
-
 # 並び替え
 foreach ($marge_data as $k => $v) {
   $id[$k] = $v['date'];
 }
-array_multisort($id, SORT_DESC, $marge_data);
-
+if (!empty($marge_data)) {
+    array_multisort($id, SORT_DESC, $marge_data);
+}
 # 結果を表示
 header('Content-type: text/javascript; charset=utf-8');
 echo json_encode($marge_data);
