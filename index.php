@@ -118,7 +118,9 @@ function rss1_feed_get($rssdata){
     foreach ($rssdata->channel as $channel) {
         $work = array();
         foreach ($channel as $key => $value) {
-            $work[$key] = (string)$value;
+            if ($key !== 'items') {
+                $work[$key] = (string)$value;
+            }
         }
         $data[] = $work;
     }
@@ -129,8 +131,9 @@ function rss2_feed_get($rssdata){
     foreach ($rssdata->channel as $channel) {
         $work = array();
         foreach ($channel as $key => $value) {
-
-            $work[$key] = (string)$value;
+            if ($key !== 'item') {
+                $work[$key] = (string)$value;
+            }
         }
         $data[] = $work;
     }
