@@ -208,6 +208,10 @@ function atom_items_get($rssdata){
             } else {
                 $work[$key] = (string)$value;
             }
+            if ( $key === "updated"){
+                $timestamp = strtotime((string)$value);
+                $work['date'] = date('Y/m/d H:i:s', $timestamp);
+            } 
         }
         $data[] = $work;
     }
