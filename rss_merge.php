@@ -2,11 +2,15 @@
 
 include './config.php';
 
-$rss_urls = array(
-	"https://www.town.fukaura.lg.jp/categories/bunya/korona/index.rss",
-	"http://www.vill.inakadate.lg.jp/shinchaku-portal/index.rss",
-    "https://www.city.hirakawa.lg.jp/rss/feed.rss"
-);
+
+$rss_urls = explode(',',filter_input(INPUT_GET, 'url') );
+
+
+// $rss_urls = array(
+// 	"https://www.town.fukaura.lg.jp/categories/bunya/korona/index.rss",
+// 	"http://www.vill.inakadate.lg.jp/shinchaku-portal/index.rss",
+//     "https://www.city.hirakawa.lg.jp/rss/feed.rss"
+// );
 
 # GET
 # TODO: POSTにする
