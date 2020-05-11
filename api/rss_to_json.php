@@ -141,11 +141,13 @@ function rss2_feed_get($rssdata){
 }
 function atom_feed_get($rssdata){
     $data = array();
-    foreach ($rssdata as $item){
-        $work = array();
-        $work['title'] = (string)$item;
-        $data[] = $work;
+    $work = array();
+    foreach ($rssdata as $key => $item){
+        if ($key !== 'entry') {
+            $work[$key] = (string)$item;
+        }
     }
+    $data[] = $work;
     return $data;
 }
 
