@@ -39,6 +39,10 @@ if (PROXY_REQUEST) {
     );
 }
 
+$search = array("\0", "\x01", "\x02", "\x03", "\x04", "\x05","\x06", "\x07", "\x08", "\x0b", "\x0c", "\x0e", "\x0f");
+$contents = str_replace($search, '', $contents);  
+
+
 // file_get_contents結果確認
 preg_match("/[0-9]{3}/", $http_response_header[0], $http_status);
 if($http_status[0] === '200'){
