@@ -1,6 +1,6 @@
 <?php
 
-include './config.php';
+include './../config.php';
 
 $rss_url = filter_input(INPUT_GET, 'rss_url', FILTER_VALIDATE_URL);
 $size = filter_input(INPUT_GET, 'size', FILTER_VALIDATE_INT) ?: 0;
