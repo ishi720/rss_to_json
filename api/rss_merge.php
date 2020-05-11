@@ -21,7 +21,7 @@ $search_keyword = array(
 # データの取得
 $rss_data = array();
 foreach ($rss_urls as $url) {
-    $rss_api_url = API_URL ."/rss_to_json/?rss_url=". urlencode($url);
+    $rss_api_url = API_URL ."/rss_to_json/api/rss_to_json.php?rss_url=". urlencode($url);
 
     $api_data = json_decode(file_get_contents($rss_api_url),true);
     if ( $api_data['status'] === 'OK') {
