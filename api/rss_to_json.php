@@ -17,31 +17,61 @@ if ( !$rss_url ) {
     exit;
 }
 
-if (PROXY_REQUEST) {
-    $contents = file_get_contents($rss_url, false, stream_context_create([
+// キャッシュの有効期限
+$cacheTime = '1h';
+
+// キャッシュのPATH
+$cachePath = "cache/".md5($rss_url);
+
+// キャッシュ利用のフラグ
+$cacheUse = false;
+
+if (file_exists($cachePath)) {
+    //キャッシュファイルが存在する場合
+    $timestamp = new DateTime( date("Y/m/d H:i:s", filemtime($cachePath)) );
+    $timestamp->add(new DateInterval('PT'.strtoupper($cacheTime)));
+    if ( new DateTime() < $timestamp ) {
+        $cacheUse = true;
+    }
+}
+
+if ( $cacheUse ) {
+    // キャッシュを利用する
+    $contents = file_get_contents(API_URL .'/rss_to_json/api/cache/'.md5($rss_url), false, stream_context_create([
             'http' => [
                 'method' => 'GET',
                 "ignore_errors" => true,
                 'request_fulluri' => true,
-                'header' =>
-                    'Proxy-Authorization: Basic '.base64_encode(PROXY_USER .':'. PROXY_PASS)."\r\n".
-                    'Proxy-Connection: close',
-                'proxy'  => PROXY_URL .':'. PROXY_PORT,
             ]
         ])
     );
 } else {
-    $contents = file_get_contents($rss_url, false, stream_context_create([
-            'http' => [
-                "ignore_errors" => true
-            ]
-        ])
-    );
+    // キャッシュを利用しない
+    if (PROXY_REQUEST) {
+        $contents = file_get_contents($rss_url, false, stream_context_create([
+                'http' => [
+                    'method' => 'GET',
+                    "ignore_errors" => true,
+                    'request_fulluri' => true,
+                    'header' => 'Content-Type: application/xml' ."\r\n".
+                        'Proxy-Authorization: Basic '.base64_encode(PROXY_USER .':'. PROXY_PASS)."\r\n".
+                        'Proxy-Connection: close',
+                    'proxy'  => PROXY_URL .':'. PROXY_PORT,
+                ]
+            ])
+        );
+    } else {
+        $contents = file_get_contents($rss_url, false, stream_context_create([
+                'http' => [
+                    "ignore_errors" => true
+                ]
+            ])
+        );
+    }
+    $search = array("\0", "\x01", "\x02", "\x03", "\x04", "\x05","\x06", "\x07", "\x08", "\x0b", "\x0c", "\x0e", "\x0f");
+    $contents = str_replace($search, '', $contents);  
+    file_put_contents($cachePath,$contents);
 }
-
-$search = array("\0", "\x01", "\x02", "\x03", "\x04", "\x05","\x06", "\x07", "\x08", "\x0b", "\x0c", "\x0e", "\x0f");
-$contents = str_replace($search, '', $contents);  
-
 
 // file_get_contents結果確認
 preg_match("/[0-9]{3}/", $http_response_header[0], $http_status);
