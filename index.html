@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>RSS TO JSON</title>
+
+    <script type="text/javascript" src="./node_modules/vue/dist/vue.min.js"></script>
+    <!-- <script type="text/javascript" src="./node_modules/axios/dist/axios.min.js"></script> -->
+</head>
+<body>
+    <h1>RSS TO JSON</h1>
+
+    <div>RSS URL</div>
+    <div id="rssurl_block">
+      <div v-for="v,key in list">
+        <input type="url" v-model="v.url">
+        <button @click="rssUrlDelete(key)">-</button>
+      </div>
+      <button @click="rssUrlAppend">+</button>
+    </div>
+
+    <div>フィルター</div>
+
+    <div id="filter_block">
+        <div v-for="v,key in list">
+            <div>
+              <select name="example" v-model="v.type">
+                  <option value="title">タイトル</option>
+                  <option value="description">詳細</option>
+                  <option value="category">カテゴリ</option>
+              </select>
+              <input type="text" v-model="v.text">
+
+              <button @click="filterDelete(key)">-</button>
+            </div>
+        </div>
+        <button @click="filterAppend">+</button>
+    </div>
+
+    <button onclick="rssMerge()">API実行</button>
+</body>
+</html>
+
+<script type="text/javascript">
+var rssUrlInstance = new Vue({
+  el: '#rssurl_block',
+  data: {
+    'list': [{
+      'url':''
+    }]
+  },
+  methods: {
+    rssUrlAppend: function(){
+      this.list.push([{
+        'url':''
+      }]);
+    },
+    rssUrlDelete: function(index){
+      this.list = this.list.filter(function(v,k){
+        return k !== index;
+      });
+    }
+  }
+});
+
+
+var filterInstance = new Vue({
+  el: '#filter_block',
+  data: {
+    'list': [{
+      'type': 'title',
+      'text': ''
+    }]
+  },
+  methods: {
+    filterAppend: function(){
+      this.list.push({
+        'type': 'title',
+        'text': ''
+      });
+    },
+    filterDelete: function(index){
+      this.list = this.list.filter(function(v,k){
+        return k !== index;
+      });
+    }
+  }
+});
+
+function rssMerge() {
+
+  //RSS URLをまとめる
+  var rssUrlList = [];
+  rssUrlInstance.list.forEach(function(val){
+    rssUrlList.push(encodeURIComponent(val.url));
+  });
+
+  var titleFilterList = [];
+  var descriptionFilterList = [];
+  var categoryFilterList = [];
+  filterInstance.list.forEach(function(val){
+    if (val.type === 'title' && val.text !== '') {
+      titleFilterList.push(val.text);
+    } else if (val.type === 'description' && val.text !== '') {
+      console.log("aaa:"+val.text);
+      descriptionFilterList.push(val.text);
+    } else if (val.type === 'category' && val.text !== '') {
+      categoryFilterList.push(val.text);
+    }
+  });
+  console.log(titleFilterList.join(','));
+  console.log(descriptionFilterList.join(','));
+  console.log(categoryFilterList.join(','));
+
+  window.open('./api/rss_merge.php?url='+ rssUrlList +'&title='+ titleFilterList.join(',') +'&description='+ descriptionFilterList.join(',') , 'rsstojsonview' );
+
+
+    // axios.get('./rss_merge.php',{
+    //     params: {
+    //         title: 'マスク'
+    //     }
+    // })
+    // .then(function (response) {
+    //     console.log(response);
+    // })
+    // .catch(function (error) {
+    //     console.log(error);
+    // });
+}
+</script>

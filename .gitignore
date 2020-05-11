@@ -1,2 +1,3 @@
 api/cache/*
 config.php
+node_modules/*

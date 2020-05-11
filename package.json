@@ -11,9 +11,14 @@
     "url": "git+https://github.com/ishi720/rss_to_json.git"
   },
   "author": "ishi720",
-  "license": "MIT",
+  "license": "UNLICENSED",
+  "private": true,
   "bugs": {
     "url": "https://github.com/ishi720/rss_to_json/issues"
   },
-  "homepage": "https://github.com/ishi720/rss_to_json#readme"
+  "homepage": "https://github.com/ishi720/rss_to_json#readme",
+  "dependencies": {
+    "axios": "0.19.x",
+    "vue": "2.x.x"
+  }
 }
