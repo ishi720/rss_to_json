@@ -144,7 +144,11 @@ function atom_feed_get($rssdata){
     $work = array();
     foreach ($rssdata as $key => $item){
         if ($key !== 'entry') {
-            $work[$key] = (string)$item;
+            if ($key === 'link') {
+                $work[$key] = (string)$item['href'];
+            } else {
+                $work[$key] = (string)$item;
+            }
         }
     }
     $data[] = $work;
