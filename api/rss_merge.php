@@ -11,12 +11,16 @@ $filter_title = filter_input(INPUT_GET, 'title') ?: '';
 $filter_description = filter_input(INPUT_GET, 'description') ?: '';
 $filter_category = filter_input(INPUT_GET, 'category') ?: '';
 
-# TODO: キーワードをカンマ区切りにする
+# フィルター条件
 $search_keyword = array(
     'title'=> $filter_title,
     'description'=> $filter_description,
     'category' => $filter_category
 );
+
+$response = array();
+$response['request']['rss'] = $rss_urls;
+$response['request']['filter'] = $search_keyword;
 
 # データの取得
 $rss_data = array();
@@ -81,6 +85,9 @@ if (!empty($marge_data)) {
     array_multisort($id, SORT_DESC, $marge_data);
 }
 
+$response['result']['count'] = count($marge_data);
+$response['result']['marge_data'] = $marge_data;
+
 # 結果を表示
 header('Content-type: text/javascript; charset=utf-8');
-echo json_encode($marge_data);
+echo json_encode($response);
