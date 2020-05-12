@@ -6,6 +6,8 @@ $rss_url = filter_input(INPUT_GET, 'rss_url', FILTER_VALIDATE_URL);
 $size = filter_input(INPUT_GET, 'size', FILTER_VALIDATE_INT) ?: 0;
 $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT) ?: 0;
 
+$noCache = filter_input(INPUT_GET, 'no_cache') === 'true' ? true: false;
+
 $data = array();
 $data['request']['url'] = $rss_url;
 $data['request']['page'] = $page;
@@ -25,13 +27,14 @@ $cachePath = "cache/".md5($rss_url);
 
 // キャッシュ利用のフラグ
 $cacheUse = false;
-
-if (file_exists($cachePath)) {
-    //キャッシュファイルが存在する場合
-    $timestamp = new DateTime( date("Y/m/d H:i:s", filemtime($cachePath)) );
-    $timestamp->add(new DateInterval('PT'.strtoupper($cacheTime)));
-    if ( new DateTime() < $timestamp ) {
-        $cacheUse = true;
+if ( !$noCache ) {
+    if (file_exists($cachePath)) {
+        //キャッシュファイルが存在する場合
+        $timestamp = new DateTime( date("Y/m/d H:i:s", filemtime($cachePath)) );
+        $timestamp->add(new DateInterval('PT'.strtoupper($cacheTime)));
+        if ( new DateTime() < $timestamp ) {
+            $cacheUse = true;
+        }
     }
 }
 

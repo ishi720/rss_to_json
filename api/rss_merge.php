@@ -5,6 +5,8 @@ include './../config.php';
 
 $rss_urls = explode(',',filter_input(INPUT_GET, 'url') );
 
+$noCache = filter_input(INPUT_GET, 'no_cache') === 'true' ? 'true': 'false';
+
 # GET
 # TODO: POSTにする
 $filter_title = filter_input(INPUT_GET, 'title') ?: '';
@@ -25,7 +27,7 @@ $response['request']['filter'] = $search_keyword;
 # データの取得
 $rss_data = array();
 foreach ($rss_urls as $url) {
-    $rss_api_url = API_URL ."/rss_to_json/api/rss_to_json.php?rss_url=". urlencode($url);
+    $rss_api_url = API_URL ."/rss_to_json/api/rss_to_json.php?rss_url=". urlencode($url) ."&no_cache=". $noCache;
 
     $api_data = json_decode(file_get_contents($rss_api_url),true);
     if ( $api_data['status'] === 'OK') {
