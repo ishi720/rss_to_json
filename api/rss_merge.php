@@ -64,7 +64,7 @@ foreach ($marge_data as $k => $v) {
         }
     }
     if( $search_keyword['category'] !== ''){
-        if ( $filter_check && in_array($search_keyword['category'], $v['category']) ) {
+        if ( $filter_check && preg_grep('/^('. str_replace(',','|',$search_keyword['category']) .')$/', $v['category']) ) {
         } else {
             $filter_check = false;
         }
