@@ -48,25 +48,22 @@ foreach ($rss_data as $json) {
 $work = array();
 foreach ($marge_data as $k => $v) {
 
-    $filter_check = true;
+    $filter_check = false;
 
     //AND
     if ($search_keyword['title'] !== '') {
-        if ( $filter_check && preg_match('/('. str_replace(',','|',$search_keyword['title']) .')/', $v['title']) === 1 ) {
-        } else {
-            $filter_check = false;
+        if ( preg_match('/('. str_replace(',','|',$search_keyword['title']) .')/', $v['title']) === 1 ) {
+            $filter_check = true;
         }
     }
     if ($search_keyword['description'] !== '') {
-        if ( $filter_check && preg_match('/('. str_replace(',','|',$search_keyword['description']) .')/', $v['description']) === 1 ) {
-        } else {
-            $filter_check = false;
+        if ( preg_match('/('. str_replace(',','|',$search_keyword['description']) .')/', $v['description']) === 1 ) {
+            $filter_check = true;
         }
     }
     if( $search_keyword['category'] !== ''){
-        if ( $filter_check && preg_grep('/^('. str_replace(',','|',$search_keyword['category']) .')$/', $v['category']) ) {
-        } else {
-            $filter_check = false;
+        if ( preg_grep('/^('. str_replace(',','|',$search_keyword['category']) .')$/', $v['category']) ) {
+            $filter_check = true;
         }
     }
     if ( $filter_check ) {
