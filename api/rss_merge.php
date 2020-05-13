@@ -13,6 +13,9 @@ $filter_title = filter_input(INPUT_GET, 'title') ?: '';
 $filter_description = filter_input(INPUT_GET, 'description') ?: '';
 $filter_category = filter_input(INPUT_GET, 'category') ?: '';
 
+$page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT) ?: null;
+$size = filter_input(INPUT_GET, 'size', FILTER_VALIDATE_INT) ?: null;
+
 # フィルター条件
 $search_keyword = array(
     'title'=> $filter_title,
@@ -23,6 +26,9 @@ $search_keyword = array(
 $response = array();
 $response['request']['rss'] = $rss_urls;
 $response['request']['filter'] = $search_keyword;
+
+$response['request']['page'] = $page;
+$response['request']['size'] = $size;
 
 # データの取得
 $rss_data = array();
@@ -91,8 +97,22 @@ if (!empty($marge_data)) {
     array_multisort($id, SORT_DESC, $marge_data);
 }
 
-$response['result']['count'] = count($marge_data);
-$response['result']['marge_data'] = $marge_data;
+$response['result']['countAll'] = count($marge_data);
+
+if ( $page === null || $size === null ) {
+    $response['result']['marge_data'] = $marge_data;
+} else {
+    // ページサイズ指定
+    $init_num = $size * ($page - 1);
+    $response['result']['marge_data'] = array();
+    foreach($marge_data as $key => $item){
+        if ( $init_num <= $key && $key <= $init_num + $size -1) {
+            array_push($response['result']['marge_data'], $marge_data[$key]);
+        }
+    }
+    $response['result']['count'] = count($response['result']['marge_data']);
+}
+
 
 # 結果を表示
 header('Content-type: text/javascript; charset=utf-8');
