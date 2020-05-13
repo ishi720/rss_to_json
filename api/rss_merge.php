@@ -44,31 +44,38 @@ foreach ($rss_data as $json) {
     }
 }
 
+
+$filter_check = $search_keyword['title'] !== '' ||  $search_keyword['description'] !== '' ||  $search_keyword['category'] !== '';
+
 # フィルタリング
 $work = array();
 foreach ($marge_data as $k => $v) {
 
-    $filter_check = false;
-
-    //AND
-    if ($search_keyword['title'] !== '') {
-        if ( preg_match('/('. str_replace(',','|',$search_keyword['title']) .')/', $v['title']) === 1 ) {
-            $filter_check = true;
+    if ( $filter_check) {
+        //OR
+        if ($search_keyword['title'] !== '') {
+            if ( preg_match('/('. str_replace(',','|',$search_keyword['title']) .')/', $v['title']) === 1 ) {
+                array_push($work, $v);
+                continue;
+            } 
         }
-    }
-    if ($search_keyword['description'] !== '') {
-        if ( preg_match('/('. str_replace(',','|',$search_keyword['description']) .')/', $v['description']) === 1 ) {
-            $filter_check = true;
+        if ($search_keyword['description'] !== '') {
+            if ( preg_match('/('. str_replace(',','|',$search_keyword['description']) .')/', $v['description']) === 1 ) {
+                array_push($work, $v);
+                continue;
+            } 
         }
-    }
-    if( $search_keyword['category'] !== ''){
-        if ( preg_grep('/^('. str_replace(',','|',$search_keyword['category']) .')$/', $v['category']) ) {
-            $filter_check = true;
+        if( $search_keyword['category'] !== ''){
+            if ( preg_grep('/^('. str_replace(',','|',$search_keyword['category']) .')$/', $v['category']) ) {
+                array_push($work, $v);
+                continue;
+            } 
         }
-    }
-    if ( $filter_check ) {
+    } else {
         array_push($work, $v);
     }
+
+
 }
 $marge_data = $work;
 
