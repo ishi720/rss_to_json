@@ -1,5 +1,9 @@
 <?php
 
+# 処理時間計測開始
+$time_start = microtime(true);
+
+
 include './../config.php';
 
 
@@ -112,6 +116,9 @@ if ( $page === null || $size === null ) {
     }
     $response['result']['count'] = count($response['result']['marge_data']);
 }
+
+
+$response['result']['processingTime'] = microtime(true) - $time_start;
 
 
 # 結果を表示
