@@ -6,19 +6,16 @@ $time_start = microtime(true);
 
 include './../config.php';
 
+# POST
+$rss_urls = explode(',',filter_input(INPUT_POST, 'url') );
+$noCache = filter_input(INPUT_POST, 'no_cache') === 'true' ? 'true': 'false';
 
-$rss_urls = explode(',',filter_input(INPUT_GET, 'url') );
+$filter_title = filter_input(INPUT_POST, 'title') ?: '';
+$filter_description = filter_input(INPUT_POST, 'description') ?: '';
+$filter_category = filter_input(INPUT_POST, 'category') ?: '';
 
-$noCache = filter_input(INPUT_GET, 'no_cache') === 'true' ? 'true': 'false';
-
-# GET
-# TODO: POSTにする
-$filter_title = filter_input(INPUT_GET, 'title') ?: '';
-$filter_description = filter_input(INPUT_GET, 'description') ?: '';
-$filter_category = filter_input(INPUT_GET, 'category') ?: '';
-
-$page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT) ?: null;
-$size = filter_input(INPUT_GET, 'size', FILTER_VALIDATE_INT) ?: null;
+$page = filter_input(INPUT_POST, 'page', FILTER_VALIDATE_INT) ?: null;
+$size = filter_input(INPUT_POST, 'size', FILTER_VALIDATE_INT) ?: null;
 
 # フィルター条件
 $search_keyword = array(

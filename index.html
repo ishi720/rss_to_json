@@ -8,7 +8,7 @@
     <title>RSS TO JSON</title>
 
     <script type="text/javascript" src="./node_modules/vue/dist/vue.min.js"></script>
-    <!-- <script type="text/javascript" src="./node_modules/axios/dist/axios.min.js"></script> -->
+    <script type="text/javascript" src="./node_modules/axios/dist/axios.min.js"></script>
 </head>
 <body>
     <h1>RSS TO JSON</h1>
@@ -95,7 +95,7 @@ function rssMerge() {
   //RSS URLをまとめる
   var rssUrlList = [];
   rssUrlInstance.list.forEach(function(val){
-    rssUrlList.push(encodeURIComponent(val.url));
+    rssUrlList.push(val.url);
   });
 
   var titleFilterList = [];
@@ -111,23 +111,21 @@ function rssMerge() {
       categoryFilterList.push(val.text);
     }
   });
-  console.log(titleFilterList.join(','));
-  console.log(descriptionFilterList.join(','));
-  console.log(categoryFilterList.join(','));
 
-  window.open('./api/rss_merge.php?url='+ rssUrlList +'&title='+ titleFilterList.join(',') +'&description='+ descriptionFilterList.join(',') , 'rsstojsonview' );
+  // URLホスト
+  var params = new URLSearchParams();
+  params.append('url', rssUrlList);
+  params.append('title', titleFilterList.join(','));
+  params.append('description', descriptionFilterList.join(','));
+  params.append('category', categoryFilterList.join(','));
 
-
-    // axios.get('./rss_merge.php',{
-    //     params: {
-    //         title: 'マスク'
-    //     }
-    // })
-    // .then(function (response) {
-    //     console.log(response);
-    // })
-    // .catch(function (error) {
-    //     console.log(error);
-    // });
+  // データ取得
+  axios.post('./api/rss_merge.php', params)
+  .then(function (response) {
+      console.log(response.data);
+  })
+  .catch(function (error) {
+      console.log(error);
+  });
 }
 </script>
