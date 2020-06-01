@@ -1,0 +1,115 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "29fe61eb344c04abe384a7cb081e9343",
+    "packages": [
+        {
+            "name": "mibe/feedwriter",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mibe/FeedWriter.git",
+                "reference": "f4cc748ad8700e36663f08cfeebe7fd39b00eea2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mibe/FeedWriter/zipball/f4cc748ad8700e36663f08cfeebe7fd39b00eea2",
+                "reference": "f4cc748ad8700e36663f08cfeebe7fd39b00eea2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "FeedWriter\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Bemmerl",
+                    "email": "mail@mx-server.de"
+                },
+                {
+                    "name": "Phil Freo"
+                },
+                {
+                    "name": "Paul Ferrett"
+                },
+                {
+                    "name": "Brennen Bearnes"
+                },
+                {
+                    "name": "Michael Robinson",
+                    "email": "mike@pagesofinterest.net"
+                },
+                {
+                    "name": "Baptiste Fontaine"
+                },
+                {
+                    "name": "Kristián Valentín"
+                },
+                {
+                    "name": "Brandtley McMinn"
+                },
+                {
+                    "name": "Julian Bogdani"
+                },
+                {
+                    "name": "Anis Uddin Ahmad",
+                    "email": "anis.programmer@gmail.com"
+                },
+                {
+                    "name": "Cedric Gampert"
+                },
+                {
+                    "name": "Yamek"
+                },
+                {
+                    "name": "thielj"
+                },
+                {
+                    "name": "Pavel Khakhlou"
+                },
+                {
+                    "name": "Daniel"
+                },
+                {
+                    "name": "Tino Goratsch"
+                }
+            ],
+            "description": "Generate feeds in either RSS 1.0, RSS 2.0 or ATOM formats",
+            "homepage": "https://github.com/mibe/FeedWriter",
+            "keywords": [
+                "RSS 1.0",
+                "atom",
+                "feed",
+                "rss",
+                "rss 2.0",
+                "rss2"
+            ],
+            "time": "2016-11-19T20:47:44+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

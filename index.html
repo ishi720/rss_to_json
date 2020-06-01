@@ -40,6 +40,15 @@
         <button @click="filterAppend">+</button>
     </div>
 
+    <div>出力形式</div>
+
+    <div id="output_block">
+      <select name="example" v-model="type">
+          <option value="json">json</option>
+          <option value="rss2">rss2</option>
+      </select>
+    </div>
+
     <button onclick="rssMerge()">API実行</button>
 </body>
 </html>
@@ -90,6 +99,14 @@ var filterInstance = new Vue({
   }
 });
 
+var outputInstance = new Vue({
+  el: '#output_block',
+  data: {
+    'type':'json'
+  }
+});
+
+
 function rssMerge() {
 
   //RSS URLをまとめる
@@ -118,6 +135,8 @@ function rssMerge() {
   params.append('title', titleFilterList.join(','));
   params.append('description', descriptionFilterList.join(','));
   params.append('category', categoryFilterList.join(','));
+  params.append('output', outputInstance.type);
+
 
   // データ取得
   axios.post('./api/rss_merge.php', params)

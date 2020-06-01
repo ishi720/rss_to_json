@@ -4,6 +4,14 @@
 $time_start = microtime(true);
 
 
+// ライブラリの読み込み
+require_once "./../vendor/mibe/feedwriter/Item.php" ;
+require_once "./../vendor/mibe/feedwriter/Feed.php" ;
+require_once "./../vendor/mibe/feedwriter/RSS2.php" ;
+
+use \FeedWriter\RSS2;
+
+
 include './../config.php';
 
 # POST
@@ -16,6 +24,7 @@ $filter_category = filter_input(INPUT_POST, 'category') ?: '';
 
 $page = filter_input(INPUT_POST, 'page', FILTER_VALIDATE_INT) ?: null;
 $size = filter_input(INPUT_POST, 'size', FILTER_VALIDATE_INT) ?: null;
+$output = filter_input(INPUT_POST, 'output') ?: 'json'; // 出力形式: json/rss2
 
 # フィルター条件
 $search_keyword = array(
@@ -117,7 +126,52 @@ if ( $page === null || $size === null ) {
 
 $response['result']['processingTime'] = microtime(true) - $time_start;
 
+if ($output === "rss2") {
+    outputRSS2($response);
+} else {
+    # 結果を表示
+    header('Content-type: text/javascript; charset=utf-8');
+    echo json_encode($response);
+}
 
-# 結果を表示
-header('Content-type: text/javascript; charset=utf-8');
-echo json_encode($response);
+/**
+ * json形式で結果を返す
+ */
+function outputJSON($response){
+    header('Content-type: text/javascript; charset=utf-8');
+    echo json_encode($response);
+}
+
+/**
+ * rss2形式(xml)で結果を返す
+ */
+function outputRSS2($response){
+    $feed = new RSS2;
+
+    // チャンネル情報の登録
+    $feed->setTitle("");
+    $feed->setLink("");
+    $feed->setDescription("");
+    $feed->setDate(date(DATE_RSS, time()));
+    $feed->setChannelElement("language", "ja-JP");
+    $feed->setChannelElement("pubDate", date(DATE_RSS, time()));
+    $feed->setChannelElement("category", "");
+
+    foreach ($response['result']['marge_data'] as $k => $v) {
+
+        // インスタンスの作成
+        $item = $feed->createNewItem();
+
+        // アイテムの情報
+        $item->setTitle($v['title']);
+        $item->setLink($v['link']);
+        $item->setDescription($v['description']);
+        $item->setDate(strtotime($v['date']));
+
+        // アイテムの追加
+        $feed->addItem($item) ;
+    }
+
+    header('Content-type: text/xml; charset=utf-8');
+    echo($feed->generateFeed());
+}
