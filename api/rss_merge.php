@@ -166,7 +166,9 @@ function outputRSS2($response){
         $item->setTitle($v['title']);
         $item->setLink($v['link']);
         $item->setDescription($v['description']);
-        $item->setDate(strtotime($v['date']));
+        if ( array_key_exists( 'date', $v ) ) {
+            $item->setDate(strtotime($v['date']));
+        }
 
         // アイテムの追加
         $feed->addItem($item) ;
