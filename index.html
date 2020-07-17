@@ -13,6 +13,27 @@
 <body>
     <h1>RSS TO JSON</h1>
 
+
+    <div>ハッシュから復元する</div>
+    <div id="hash_block">
+      <input type="url" v-model="hash">
+      <button onclick="paraSet()">復元</button>
+    </div>
+
+    <hr>
+
+    <div>作成するRSSのタイトルと説明文を入力</div>
+    <div id="feed_info_block">
+        <div>
+          タイトル: <input type="text" v-model="title">
+        </div>
+        <div>
+          説明文: <input type="text" v-model="description">
+        </div>
+    </div>
+
+    <hr>
+
     <div>RSS URL</div>
     <div id="rssurl_block">
       <div v-for="v,key in list">
@@ -40,16 +61,23 @@
         <button @click="filterAppend">+</button>
     </div>
 
-    <div>出力形式</div>
+    <button onclick="rssMerge()">URL作成</button>
 
-    <div id="output_block">
-      <select name="example" v-model="type">
-          <option value="json">json</option>
-          <option value="rss2">rss2</option>
-      </select>
+    <div id="result_url_show">
+      <div>
+        <a  v-bind:href="rss" target="_blank"> {{rss}}</a>
+      </div>
+      <div>
+        <a  v-bind:href="json" target="_blank"> {{json}}</a>
+      </div>
     </div>
 
-    <button onclick="rssMerge()">API実行</button>
+
+
+
+
+
+
 </body>
 </html>
 
@@ -99,12 +127,76 @@ var filterInstance = new Vue({
   }
 });
 
-var outputInstance = new Vue({
-  el: '#output_block',
+var feedInfoInstance = new Vue({
+  el: '#feed_info_block',
   data: {
-    'type':'json'
+    'title': '',
+    'description': ''
   }
 });
+
+var resultUrlShow = new Vue({
+  el: '#result_url_show',
+  data: {
+    'rss': '',
+    'json': ''
+  }
+});
+
+var hashInstance = new Vue({
+  el: '#hash_block',
+  data: {
+    hash: ''
+  }
+});
+
+
+
+function paraSet(){
+  axios.get('./api/hash_para_get.php',{
+      params: {
+          hash: hashInstance.hash
+      }
+  })
+  .then(function (response) {
+      console.log(response);
+      feedInfoInstance.title = response.data.request.feed_title;
+      feedInfoInstance.description = response.data.request.feed_description;
+
+      rssUrlInstance.list = [];
+      response.data.request.rss.forEach(function(url){
+        rssUrlInstance.list.push({'url':url});
+      });
+
+
+      filterInstance.list = [];
+
+      response.data.request.filter.title.split(',').forEach(function(v){
+        if ( v !== '') {
+          filterInstance.list.push({'type':'title','text': v});
+        }
+      });
+
+      response.data.request.filter.description.split(',').forEach(function(v){
+        if ( v !== '') {
+          filterInstance.list.push({'type':'description','text': v});
+        }
+      });;
+
+      response.data.request.filter.category.split(',').forEach(function(v){
+        if ( v !== '') {
+          filterInstance.list.push({'type':'category','text': v});
+        }
+      });;
+
+
+  })
+  .catch(function (error) {
+      console.log(error);
+  });
+
+}
+
 
 
 function rssMerge() {
@@ -122,26 +214,26 @@ function rssMerge() {
     if (val.type === 'title' && val.text !== '') {
       titleFilterList.push(val.text);
     } else if (val.type === 'description' && val.text !== '') {
-      console.log("aaa:"+val.text);
       descriptionFilterList.push(val.text);
     } else if (val.type === 'category' && val.text !== '') {
       categoryFilterList.push(val.text);
     }
   });
 
-  // URLホスト
   var params = new URLSearchParams();
   params.append('url', rssUrlList);
   params.append('title', titleFilterList.join(','));
   params.append('description', descriptionFilterList.join(','));
   params.append('category', categoryFilterList.join(','));
-  params.append('output', outputInstance.type);
 
+  params.append('feed_title', feedInfoInstance.title);
+  params.append('feed_description', feedInfoInstance.description);
 
   // データ取得
   axios.post('./api/rss_merge.php', params)
   .then(function (response) {
-      console.log(response.data);
+      resultUrlShow.rss = response.data.result.output.rss;
+      resultUrlShow.json = response.data.result.output.json;
   })
   .catch(function (error) {
       console.log(error);

@@ -1,4 +1,5 @@
 api/cache/*
+api/paraCache/*
 config.php
 node_modules/*
 vendor/*
