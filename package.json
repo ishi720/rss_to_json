@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/ishi720/rss_to_json#readme",
   "dependencies": {
-    "axios": "0.19.x",
+    "axios": "0.20.x",
     "vue": "2.x.x"
   }
 }
